@@ -106,8 +106,16 @@
       <!-- Chat Panel -->
       <div class="chat-panel">
         <div class="chat-header" id="chatHeader">
-          <i class="fa-solid fa-image" style="color:#7c3aed;"></i> Image Generation Bot
-        </div>
+    <span>
+        <i class="fa-solid fa-image" style="color:#7c3aed;"></i>
+        Image Generation Bot
+    </span>
+    <button id="clearChatBtn" type="button" title="Clear chat">
+        <i class="fa-solid fa-trash"></i> Clear Chat
+    </button>
+</div>
+
+      
         <div class="chat-messages" id="chatMessages">
           <div class="message">
             <div class="msg-avatar bot-av"><i class="fa-solid fa-robot"></i></div>
@@ -484,5 +492,6 @@ Results-driven software developer with expertise in building responsive web appl
       }, 2000);
     });
   </script>
+  <script src="script.js"></script>
 </body>
 </html>

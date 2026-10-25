@@ -1,71 +1,80 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const generateBtn = document.querySelector('.btn-generate');
-  const inputField = document.querySelector('.input-wrapper input');
-  const chatSection = document.querySelector('.chat-section');
-  const imagePreview = document.querySelector('.image-preview img');
+document.addEventListener("DOMContentLoaded", () => {
+  const chatHeader = document.getElementById("chatHeader");
+  const chatMessages = document.getElementById("chatMessages");
+  const userInput = document.getElementById("userInput");
+  const promptBox = document.getElementById("promptBox");
+  const generatedImage = document.getElementById("generatedImage");
+  const imgIcon = document.getElementById("imgIcon");
+  const imgPlaceholderText = document.getElementById("imgPlaceholderText");
 
-  generateBtn.addEventListener('click', handleGenerate);
-  inputField.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') handleGenerate();
-  });
+  // Clear Chat button click handler
+  // Event delegation allows it to work after switching feature tabs.
+  if (chatHeader) {
+    chatHeader.addEventListener("click", (event) => {
+      const clearButton = event.target.closest("#clearChatBtn");
 
-  function handleGenerate() {
-    const promptText = inputField.value.trim();
-    if (!promptText) return;
+      if (!clearButton) return;
 
-    // 1. User Message-a Add Seithal
-    appendMessage('user', promptText);
-    inputField.value = '';
+      // Confirm before clearing
+      const confirmClear = window.confirm(
+        "Are you sure you want to clear the chat?"
+      );
 
-    // 2. Bot Loading Message-a Add Seithal
-    const loadingId = 'loading-' + Date.now();
-    appendLoadingMessage(loadingId);
+      if (!confirmClear) return;
 
-    // 3. Image Loading Simulation (2 Seconds Delay)
-    setTimeout(() => {
-      // Loading Message-a Remove Seithal
-      const loadingEl = document.getElementById(loadingId);
-      if (loadingEl) loadingEl.remove();
+      // Clear visible messages
+      if (chatMessages) {
+        chatMessages.innerHTML = "";
+      }
 
-      // Bot Response Message
-      appendMessage('bot', 'Here is your generated image:');
+      // Clear conversation history for all features
+      if (typeof chatHistories !== "undefined") {
+        Object.keys(chatHistories).forEach((feature) => {
+          chatHistories[feature] = [];
+        });
+      }
 
-      // Random Image Update (Placeholder API)
-      const randomSeed = Math.floor(Math.random() * 1000);
-      imagePreview.src = `https://picsum.photos/seed/${randomSeed}/500/300`;
-    }, 2000);
-  }
+      // Clear text inputs
+      if (userInput) {
+        userInput.value = "";
+      }
 
-  function appendMessage(sender, text) {
-    const msgDiv = document.createElement('div');
-    msgDiv.classList.add('chat-message');
-    if (sender === 'user') msgDiv.classList.add('user');
+      if (promptBox) {
+        promptBox.value = "";
+      }
 
-    const avatarIcon = sender === 'user' ? 'fa-user' : 'fa-robot';
-    const avatarClass = sender === 'user' ? 'user-avatar-msg' : 'bot-avatar';
-    const senderName = sender === 'user' ? '' : '<strong>Bot</strong><br>';
+      // Reset generated image preview
+      if (generatedImage) {
+        generatedImage.removeAttribute("src");
+        generatedImage.style.display = "none";
+      }
 
-    msgDiv.innerHTML = `
-      <div class="avatar ${avatarClass}"><i class="fa-solid ${avatarIcon}"></i></div>
-      <div class="message-bubble">${senderName}${text}</div>
-    `;
+      // Restore image placeholder
+      if (imgIcon) {
+        imgIcon.className = "fa-solid fa-wand-magic-sparkles";
+        imgIcon.style.display = "block";
+      }
 
-    chatSection.appendChild(msgDiv);
-    chatSection.scrollTop = chatSection.scrollHeight;
-  }
+      if (imgPlaceholderText) {
+        imgPlaceholderText.textContent =
+          "Your generated image will appear here";
+        imgPlaceholderText.style.display = "block";
+      }
 
-  function appendLoadingMessage(id) {
-    const msgDiv = document.createElement('div');
-    msgDiv.classList.add('chat-message');
-    msgDiv.id = id;
-    msgDiv.innerHTML = `
-      <div class="avatar bot-avatar"><i class="fa-solid fa-robot"></i></div>
-      <div class="message-bubble">
-        <strong>Bot</strong> <i class="fa-solid fa-spinner fa-spin" style="margin-left: 4px;"></i><br>
-        Generating image... Please wait.
-      </div>
-    `;
-    chatSection.appendChild(msgDiv);
-    chatSection.scrollTop = chatSection.scrollHeight;
+      // Stop any ongoing speech
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      // Reset voice status
+      const voiceStatusText = document.getElementById("voiceStatusText");
+
+      if (voiceStatusText) {
+        voiceStatusText.textContent =
+          'Click "Start Speaking" or use mic in chat to talk.';
+      }
+
+      console.log("Chat cleared successfully!");
+    });
   }
 });
